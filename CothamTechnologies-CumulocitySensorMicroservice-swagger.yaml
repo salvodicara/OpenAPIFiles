@@ -1,108 +1,106 @@
----
-  swagger: "2.0"
-  info:
-    description: Cumulocity sensor microservice REST API for FloPro Integration
-    version: "0.1"
-    title: Cumulocity sensor microservice
-  host: cotham.eu-latest.cumulocity.com
-  basePath: /service/sensor-microservice
-  schemes:
-  - https
-  security:
-  - auth: []
-  paths:
-    /sim-measurements:
-      post:
-        tags:
-        - Simulation
-        summary: Post a simulated measurement
-        description: Post a simulated measurement to the Cumulocity API
-        consumes:
-        - application/x-www-form-urlencoded
-        produces:
-        - application/json
-        parameters:
-        - name: jwt
-          in: formData
-          description: JWT Token
-          required: false
-          type: string
-        - name: deviceId
-          in: formData
-          description: Device that is posting the measurement
-          required: true
-          type: string
-        - name: dateTime
-          in: formData
-          description: Date of measurement
-          required: true
-          type: string
-        - name: type
-          in: formData
-          description: Type of measurement
-          required: true
-          type: string
-        - name: simJSON
-          in: formData
-          description: JSON-formatted string containing simulation data
-          required: true
-          type: string
-        responses:
-          "201":
-            description: Created
-            schema:
-              $ref: '#/definitions/CreatedMeasurement'
-          "422":
-            description: Unprocessable entity
-            schema:
-              $ref: '#/definitions/InvalidRequestError'
-  securityDefinitions:
-    auth:
-      type: basic
-  definitions:
-    CreatedMeasurement:
-      type: object
-      properties:
-        self:
-          type: string
-        time:
-          type: string
-        id:
-          type: string
-        source:
-          $ref: '#/definitions/CreatedMeasurement_source'
-        type:
-          type: string
-        statusCode:
-          type: integer
-        statusText:
-          type: string
-        isError:
-          type: boolean
-    InvalidRequestError:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/definitions/InvalidRequestError_errors'
-    CreatedMeasurement_source:
-      type: object
-      properties:
-        self:
-          type: string
-        id:
-          type: string
-      description: Device that posted the measurement
-    InvalidRequestError_errors:
-      type: object
-      properties:
-        value:
-          type: integer
-        msg:
-          type: string
-        param:
-          type: string
-        location:
-          type: string
-  
+swagger: "2.0"
+info:
+  description: Cumulocity sensor microservice REST API for FloPro Integration
+  version: "0.1"
+  title: Cumulocity sensor microservice
+host: cotham.eu-latest.cumulocity.com
+basePath: /service/sensor-microservice
+schemes:
+- https
+security:
+- auth: []
+paths:
+  /sim-measurements:
+    post:
+      tags:
+      - Simulation
+      summary: Post a simulated measurement
+      description: Post a simulated measurement to the Cumulocity API
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: jwt
+        in: formData
+        description: JWT Token
+        required: false
+        type: string
+      - name: deviceId
+        in: formData
+        description: Device that is posting the measurement
+        required: true
+        type: string
+      - name: dateTime
+        in: formData
+        description: Date of measurement
+        required: true
+        type: string
+      - name: type
+        in: formData
+        description: Type of measurement
+        required: true
+        type: string
+      - name: simJSON
+        in: formData
+        description: JSON-formatted string containing simulation data
+        required: true
+        type: string
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/CreatedMeasurement'
+        "422":
+          description: Unprocessable entity
+          schema:
+            $ref: '#/definitions/InvalidRequestError'
+securityDefinitions:
+  auth:
+    type: basic
+definitions:
+  CreatedMeasurement:
+    type: object
+    properties:
+      self:
+        type: string
+      time:
+        type: string
+      id:
+        type: string
+      source:
+        $ref: '#/definitions/CreatedMeasurement_source'
+      type:
+        type: string
+      statusCode:
+        type: integer
+      statusText:
+        type: string
+      isError:
+        type: boolean
+  InvalidRequestError:
+    type: object
+    properties:
+      errors:
+        type: array
+        items:
+          $ref: '#/definitions/InvalidRequestError_errors'
+  CreatedMeasurement_source:
+    type: object
+    properties:
+      self:
+        type: string
+      id:
+        type: string
+    description: Device that posted the measurement
+  InvalidRequestError_errors:
+    type: object
+    properties:
+      value:
+        type: integer
+      msg:
+        type: string
+      param:
+        type: string
+      location:
+        type: string
