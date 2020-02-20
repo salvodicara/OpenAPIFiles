@@ -1,0 +1,518 @@
+   swagger: "2.0"
+   info:
+     description: Cumulocity microservice REST API for FloPro Integration
+     version: "0.1"
+     title: Cumulocity sensor microservice
+   host: cotham.eu-latest.cumulocity.com
+   basePath: /service/sensor-microservice/
+   schemes:
+   - https
+   security:
+   - auth: []
+   paths:
+     /:
+       get:
+         tags:
+         - Test tags
+         summary: Receive a welcome message
+         description: Get Welcome message from the service
+         produces:
+         - application/json
+         parameters: []
+         responses:
+           "200":
+             description: Success
+             schema:
+               $ref: '#/definitions/inline_response_200'
+     /sim-measurements:
+       post:
+         tags:
+         - Test tags
+         - Simulation
+         summary: Post a simulated measurement
+         description: Post a simulated measurement to the Cumulocity API
+         consumes:
+         - application/json
+         produces:
+         - application/json
+         parameters:
+         - in: body
+           name: body
+           description: Request containing details about the simulated measurement
+           required: true
+           schema:
+             $ref: '#/definitions/SimMeasurement'
+         responses:
+           "201":
+             description: Created
+             schema:
+               $ref: '#/definitions/CreatedMeasurement'
+           "422":
+             description: Unprocessable entity
+             schema:
+               $ref: '#/definitions/InvalidRequestError'
+     /inventory/managedObjects/{deviceId}:
+       get:
+         tags:
+         - Inventory
+         summary: https://cumulocity.com/guides/reference/inventory/#managed-object
+         description: Get a managedObject
+         produces:
+         - application/json
+         parameters:
+         - name: deviceId
+           in: path
+           description: device id
+           required: true
+           type: string
+         responses:
+           "200":
+             description: success
+             schema:
+               $ref: '#/definitions/inline_response_200_1'
+           "404":
+             description: Not Found Device
+             schema:
+               $ref: '#/definitions/inline_response_404'
+           default:
+             description: Other Error
+             schema:
+               $ref: '#/definitions/inline_response_404'
+     /inventory/managedObjects/{deviceId}/{referenceType}:
+       get:
+         tags:
+         - Inventory
+         summary: https://cumulocity.com/guides/reference/inventory/#managed-object-reference-collection
+         description: Get Managed Object Reference Collection
+         produces:
+         - application/json
+         parameters:
+         - name: referenceType
+           in: path
+           description: reference type childDevices or childAssets
+           required: true
+           type: string
+         - name: deviceId
+           in: path
+           description: device ID of parent
+           required: true
+           type: string
+         - name: pageSize
+           in: query
+           description: Default 5, Max 2000
+           required: false
+           type: integer
+         - name: currentPage
+           in: query
+           required: false
+           type: integer
+         - name: withTotalPages
+           in: query
+           required: false
+           type: boolean
+         - name: dateFrom
+           in: query
+           description: example formats 2019-04-20 or 2019-04-20T08:30:00.000Z
+           required: false
+           type: string
+         - name: dateTo
+           in: query
+           description: example formats 2019-04-20 or 2019-04-20T08:30:00.000Z
+           required: false
+           type: string
+         - name: query
+           in: query
+           description: 'query language eg only query to database: …?query=name eq ‘M01’ keyword $filter=: …?query=$filter=name eq ‘M01’ keyword $orderby=: …?query=$orderby=id asc keywords $filter= and $orderby=: …?query=$filter=name eq ‘M01’ $orderby=id'
+           required: false
+           type: string
+         - name: fragmentType
+           in: query
+           description: fragmentType={fragmentType}
+           required: false
+           type: string
+         - name: type
+           in: query
+           description: type={type}
+           required: false
+           type: string
+         - name: ids
+           in: query
+           description: ids={ids}
+           required: false
+           type: string
+         responses:
+           "200":
+             description: success
+             schema:
+               $ref: '#/definitions/inline_response_200_2'
+           default:
+             description: Other Error
+             schema:
+               $ref: '#/definitions/inline_response_404'
+     /inventory/managedObjects:
+       get:
+         tags:
+         - Inventory
+         summary: https://cumulocity.com/guides/reference/inventory/#managed-object-collection
+         description: Get Managed Object Collection
+         produces:
+         - application/json
+         parameters:
+         - name: pageSize
+           in: query
+           description: Default 5, Max 2000
+           required: false
+           type: integer
+         - name: currentPage
+           in: query
+           required: false
+           type: integer
+         - name: withTotalPages
+           in: query
+           required: false
+           type: boolean
+         - name: dateFrom
+           in: query
+           description: example formats 2019-04-20 or 2019-04-20T08:30:00.000Z
+           required: false
+           type: string
+         - name: dateTo
+           in: query
+           description: example formats 2019-04-20 or 2019-04-20T08:30:00.000Z
+           required: false
+           type: string
+         - name: query
+           in: query
+           description: 'query language eg only query to database: …?query=name eq ‘M01’ keyword $filter=: …?query=$filter=name eq ‘M01’ keyword $orderby=: …?query=$orderby=id asc keywords $filter= and $orderby=: …?query=$filter=name eq ‘M01’ $orderby=id'
+           required: false
+           type: string
+         - name: fragmentType
+           in: query
+           description: fragmentType={fragmentType}
+           required: false
+           type: string
+         - name: type
+           in: query
+           description: type={type}
+           required: false
+           type: string
+         - name: ids
+           in: query
+           description: ids={ids}
+           required: false
+           type: string
+         responses:
+           "200":
+             description: success
+             schema:
+               $ref: '#/definitions/inline_response_200_3'
+           default:
+             description: Other Error
+             schema:
+               $ref: '#/definitions/inline_response_404'
+   securityDefinitions:
+     auth:
+       type: basic
+   definitions:
+     SimMeasurement:
+       type: object
+       required:
+       - dateTime
+       - deviceId
+       - simJSON
+       - type
+       properties:
+         jwt:
+           type: string
+           example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODE0MTM5MzQsImV4cCI6MTU5MTQxMzkzMywiaXNzIjoic2Vuc29yQXBwIiwiYXVkIjoiaHR0cHM6XC9cL2NvdGhhbS5ldS1sYXRlc3QuY3VtdWxvY2l0eS5jb20iLCJzdWIiOiJqYW1lc0Bjb3RoYW10ZWNobm9sb2dpZXMuY29tIiwiY29kZSI6IjN2VUNBSlltQ0lKS1pDZ2sreXRWdVcxQVwvUGdpSDg3Q2R2RTd1bHc3dUR0OGlYS1NiMUYwYXRQRUJpVktlVW5hZXQxWjRJanFmWXErOUJKcnM0V3JjeXNZXC9EV1JcL3lNWmNzUkl0cHNvRnl3XC9kdWE0OHRzdmZaQVZxSTZRIn0.CujIJAf_jRTl7L49cM6qzUXMeNOTBlYvG2qLxnR56QY
+           description: JWT Token
+         deviceId:
+           type: string
+           example: "853299"
+           description: Device that is posting the measurement
+         dateTime:
+           type: string
+           example: 2019-04-20T08:30:00.000Z
+           description: Date of measurement
+         type:
+           type: string
+           example: ct_CustomSensor_sim
+           description: Type of measurement
+         simJSON:
+           type: string
+           example: '[{"status":"Disabled","min":"","decimals":"2","units":[{"unitCode":""}],"max":"","defaultUnit":"","seriesName":"ct_CustomSeries_4"},{"status":"Enabled","min":"5","decimals":"2","units":[{"unitCode":""}],"max":"50","defaultUnit":"C","seriesName":"ct_CustomSeries_2"},{"status":"Disabled","min":"","decimals":"2","units":[{"unitCode":""}],"max":"","defaultUnit":"","seriesName":"ct_CustomSeries_3"},{"status":"Enabled","min":"2","decimals":"2","units":[{"unitCode":""}],"max":"10","defaultUnit":"C","seriesName":"ct_CustomSeries_1"}]'
+           description: JSON-formatted string containing simulation data
+     CreatedMeasurement:
+       type: object
+       properties:
+         self:
+           type: string
+           example: https://cotham.eu-latest.cumulocity.com/measurement/measurements/870985
+         time:
+           type: string
+           example: 2019-04-20T08:30:00.000Z
+         id:
+           type: string
+           example: "870985"
+         source:
+           $ref: '#/definitions/CreatedMeasurement_source'
+         type:
+           type: string
+           example: ct_Simulation
+         statusCode:
+           type: integer
+           example: 201
+         statusText:
+           type: string
+           example: Created
+         isError:
+           type: boolean
+           example: false
+     InvalidRequestError:
+       type: object
+       properties:
+         errors:
+           type: array
+           items:
+             $ref: '#/definitions/InvalidRequestError_errors'
+     inline_response_200:
+       type: object
+       properties:
+         message:
+           type: string
+     inline_response_200_1_c8y_Hardware:
+       type: object
+       properties:
+         model:
+           type: string
+         serialNumber:
+           type: string
+     inline_response_200_1_c8y_Mobile:
+       type: object
+       properties:
+         imei:
+           type: string
+         cellId:
+           type: string
+         iccid:
+           type: string
+     inline_response_200_1_c8y_Firmware:
+       type: object
+       properties:
+         version:
+           type: string
+     inline_response_200_1_c8y_Position:
+       type: object
+       properties:
+         alt:
+           type: string
+         lng:
+           type: string
+         lat:
+           type: string
+     inline_response_200_1:
+       type: object
+       properties:
+         owner:
+           type: string
+         creationTime:
+           type: string
+         lastUpdated:
+           type: string
+         type:
+           type: string
+         name:
+           type: string
+         id:
+           type: string
+         c8y_Hardware:
+           $ref: '#/definitions/inline_response_200_1_c8y_Hardware'
+         c8y_Mobile:
+           $ref: '#/definitions/inline_response_200_1_c8y_Mobile'
+         c8y_Firmware:
+           $ref: '#/definitions/inline_response_200_1_c8y_Firmware'
+         c8y_Position:
+           $ref: '#/definitions/inline_response_200_1_c8y_Position'
+     inline_response_404:
+       type: object
+       properties:
+         error:
+           type: string
+         info:
+           type: string
+         message:
+           type: string
+     inline_response_200_2_statistics:
+       type: object
+       properties:
+         totalPages:
+           type: integer
+         currentPage:
+           type: integer
+         pageSize:
+           type: integer
+     inline_response_200_2_managedObject_c8y_ActiveAlarmStatus:
+       type: object
+       properties:
+         major:
+           type: string
+     inline_response_200_2_managedObject_c8y_Availability:
+       type: object
+       properties:
+         lastMessage:
+           type: string
+         status:
+           type: string
+     inline_response_200_2_managedObject_c8y_Connection:
+       type: object
+       properties:
+         status:
+           type: string
+     inline_response_200_2_managedObject:
+       type: object
+       properties:
+         owner:
+           type: string
+         creationTime:
+           type: string
+         lastUpdated:
+           type: string
+         type:
+           type: string
+         name:
+           type: string
+         id:
+           type: string
+         c8y_ActiveAlarmStatus:
+           $ref: '#/definitions/inline_response_200_2_managedObject_c8y_ActiveAlarmStatus'
+         c8y_Availability:
+           $ref: '#/definitions/inline_response_200_2_managedObject_c8y_Availability'
+         c8y_Connection:
+           $ref: '#/definitions/inline_response_200_2_managedObject_c8y_Connection'
+         c8y_Hardware:
+           $ref: '#/definitions/inline_response_200_1_c8y_Hardware'
+         c8y_Mobile:
+           $ref: '#/definitions/inline_response_200_1_c8y_Mobile'
+         c8y_Firmware:
+           $ref: '#/definitions/inline_response_200_1_c8y_Firmware'
+         c8y_Position:
+           $ref: '#/definitions/inline_response_200_1_c8y_Position'
+     inline_response_200_2_references:
+       type: object
+       properties:
+         managedObject:
+           $ref: '#/definitions/inline_response_200_2_managedObject'
+     inline_response_200_2:
+       type: object
+       properties:
+         next:
+           type: string
+         self:
+           type: integer
+         statistics:
+           $ref: '#/definitions/inline_response_200_2_statistics'
+         references:
+           type: array
+           items:
+             $ref: '#/definitions/inline_response_200_2_references'
+     inline_response_200_3_additionParents_managedObject:
+       type: object
+       properties:
+         name:
+           type: string
+         id:
+           type: string
+         self:
+           type: string
+     inline_response_200_3_additionParents_references:
+       type: object
+       properties:
+         managedObject:
+           $ref: '#/definitions/inline_response_200_3_additionParents_managedObject'
+     inline_response_200_3_additionParents:
+       type: object
+       properties:
+         self:
+           type: string
+         references:
+           type: array
+           items:
+             $ref: '#/definitions/inline_response_200_3_additionParents_references'
+     inline_response_200_3_managedObjects:
+       type: object
+       properties:
+         additionParents:
+           $ref: '#/definitions/inline_response_200_3_additionParents'
+         assetParents:
+           $ref: '#/definitions/inline_response_200_3_additionParents'
+         childAdditions:
+           $ref: '#/definitions/inline_response_200_3_additionParents'
+         childAssets:
+           $ref: '#/definitions/inline_response_200_3_additionParents'
+         childDevices:
+           $ref: '#/definitions/inline_response_200_3_additionParents'
+         deviceParents:
+           $ref: '#/definitions/inline_response_200_3_additionParents'
+         owner:
+           type: string
+         creationTime:
+           type: string
+         lastUpdated:
+           type: string
+         type:
+           type: string
+         name:
+           type: string
+         id:
+           type: string
+         c8y_IsDeviceGroup:
+           type: string
+         c8y_Global:
+           type: string
+         c8y_Hardware:
+           $ref: '#/definitions/inline_response_200_1_c8y_Hardware'
+         c8y_Mobile:
+           $ref: '#/definitions/inline_response_200_1_c8y_Mobile'
+         c8y_Firmware:
+           $ref: '#/definitions/inline_response_200_1_c8y_Firmware'
+         c8y_Position:
+           $ref: '#/definitions/inline_response_200_1_c8y_Position'
+     inline_response_200_3:
+       type: object
+       properties:
+         next:
+           type: string
+         self:
+           type: integer
+         statistics:
+           $ref: '#/definitions/inline_response_200_2_statistics'
+         managedObjects:
+           type: array
+           items:
+             $ref: '#/definitions/inline_response_200_3_managedObjects'
+     CreatedMeasurement_source:
+       type: object
+       properties:
+         self:
+           type: string
+           example: https://cotham.eu-latest.cumulocity.com/inventory/managedObjects/853299
+         id:
+           type: string
+           example: "853299"
+       description: Device that posted the measurement
+     InvalidRequestError_errors:
+       type: object
+       properties:
+         value:
+           type: integer
+           example: 2
+         msg:
+           type: string
+           example: '"jwt" must be a valid JWT token'
+         param:
+           type: string
+           example: jwt
+         location:
+           type: string
+           example: body
+   
